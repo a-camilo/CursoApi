@@ -1,16 +1,44 @@
 package utils;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
 public class JsonUtils {
 
-    public JSONObject parseJSONFile() throws IOException {
-        String content = new String(Files.readAllBytes(Paths.get("src/test/resources/jsons/create_user.json")));
+    public JSONObject parseJSONFile(String json) throws IOException {
+        String content = new String(Files.readAllBytes(Paths.get("src/test/resources/jsons/" + json + ".json")));
         return new JSONObject(content);
+    }
 
+    public JSONObject updateJson(JSONObject obj, String keyMain, String newValue) {
+        Iterator iterator = obj.keys();
+        String key = null;
+        while (iterator.hasNext()) {
+            key = (String) iterator.next();
+
+            if ((obj.optJSONArray(key) == null) && (obj.optJSONObject(key) == null)) {
+                if ((key.equals(keyMain))) {
+                    obj.put(key, newValue);
+                    return obj;
+                }
+            }
+
+            if (obj.optJSONObject(key) != null) {
+                updateJson(obj.getJSONObject(key), keyMain, newValue);
+            }
+
+            if (obj.optJSONArray(key) != null) {
+                JSONArray jsonArray = obj.getJSONArray(key);
+                for (int i = 0; i < jsonArray.length(); i++) {
+                    updateJson(jsonArray.getJSONObject(i), keyMain, newValue);
+                }
+            }
+        }
+        return obj;
     }
 }
