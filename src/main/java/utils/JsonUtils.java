@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
+import java.util.Map;
 
 public class JsonUtils {
 
@@ -40,5 +41,20 @@ public class JsonUtils {
             }
         }
         return obj;
+    }
+
+    public JSONObject setJsonValues(JSONObject json, Map<String,String> values){
+        JSONObject newJson = null;
+
+        for (Map.Entry<String,String> entry : values.entrySet()){
+            String key = entry.getKey();
+            String value = entry.getValue();
+            try {
+                newJson = updateJson(json,key,value);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        return newJson;
     }
 }
